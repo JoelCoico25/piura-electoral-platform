@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { territoryLevel } from './territories.js';
+import { territoryLevel } from './territoryLevel.js';
 describe('UBIGEO levels', () => {
   it('distinguishes department, province and district', () => {
     expect(territoryLevel('20')).toBe('departamento');

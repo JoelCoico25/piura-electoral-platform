@@ -1,14 +1,10 @@
 import type { FastifyInstance } from 'fastify';
 import { query } from '../db.js';
+import { territoryLevel } from './territoryLevel.js';
+export { territoryLevel } from './territoryLevel.js';
 
 const idSchema = { type: 'object', required: ['ubigeo'], properties: { ubigeo: { type: 'string', pattern: '^[0-9]{2}([0-9]{2})?([0-9]{2})?$' } } } as const;
 const notFound = { error: 'TERRITORY_NOT_FOUND', message: 'El territorio no existe en el catálogo regional' };
-
-export function territoryLevel(id: string): 'departamento' | 'provincia' | 'distrito' {
-  if (id.length === 2) return 'departamento';
-  if (id.length === 4) return 'provincia';
-  return 'distrito';
-}
 
 export async function territoryExists(id: string): Promise<boolean> {
   const table = id.length === 2 ? 'departamentos' : id.length === 4 ? 'provincias' : 'distritos';
