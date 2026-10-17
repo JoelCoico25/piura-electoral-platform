@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router'
-import { preloadExplorerPage } from '../../app/explorerModule'
+import { preloadExplorerPage } from '../../../app/explorerModule'
 
-export function AppHeader() {
+const AppHeader = () => {
   return (
     <header className="border-b border-slate-200 bg-white text-slate-900">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 pt-3 text-left sm:px-6 xl:min-h-16 xl:px-8 xl:pt-0">
@@ -99,3 +99,5 @@ export function AppHeader() {
     </header>
   )
 }
+
+export default AppHeader
