@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router'
-import AppFooter from './components/layout/AppFooter/AppFooter'
-import AppHeader from './components/layout/AppHeader/AppHeader'
+import AppFooter from '../../components/layout/AppFooter/AppFooter'
+import AppHeader from '../../components/layout/AppHeader/AppHeader'
 
-function App() {
+const App = () => {
   return (
     <div className="flex min-h-dvh flex-col bg-slate-50 text-slate-900">
       <AppHeader />
