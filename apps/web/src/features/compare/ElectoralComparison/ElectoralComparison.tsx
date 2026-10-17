@@ -1,11 +1,11 @@
-import { decimalFormat, integerFormat } from '../../lib/numberFormat'
+import { decimalFormat, integerFormat } from '../../../lib/numberFormat'
 import { useId } from 'react'
-import { formatElectoralDifference } from './comparisonData'
+import { formatElectoralDifference } from '../comparisonData'
 import { useQuery } from '@tanstack/react-query'
-import { electionsQueryOptions } from '../../data/electionsQuery'
-import type { Province } from '../../data/provincesQuery'
-import type { District } from '../../data/districtsQuery'
-import type { ElectoralResult } from '../explorer/electoralData'
+import { electionsQueryOptions } from '../../../data/electionsQuery'
+import type { Province } from '../../../data/provincesQuery'
+import type { District } from '../../../data/districtsQuery'
+import type { ElectoralResult } from '../../explorer/electoralData'
 
 type Territory = Province | District
 const percentage = decimalFormat
@@ -17,7 +17,7 @@ const metrics = [
   { field: 'votantes', label: 'Votantes (personas)' },
 ] as const
 
-export function ElectoralComparison({ a, b }: { a: Territory; b: Territory }) {
+const ElectoralComparison = ({ a, b }: { a: Territory; b: Territory }) => {
   const tableId = useId()
   const valid = /^20(\d{2}|\d{4})$/.test(a.ubigeo) && /^20(\d{2}|\d{4})$/.test(b.ubigeo) &&
     a.ubigeo.length === b.ubigeo.length && a.ubigeo !== b.ubigeo
@@ -83,3 +83,5 @@ export function ElectoralComparison({ a, b }: { a: Territory; b: Territory }) {
     </section>
   )
 }
+
+export default ElectoralComparison

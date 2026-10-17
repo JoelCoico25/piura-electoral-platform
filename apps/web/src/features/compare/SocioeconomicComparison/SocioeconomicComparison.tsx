@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { socioeconomicsQueryOptions } from '../../data/socioeconomicsQuery'
-import type { District } from '../../data/districtsQuery'
-import { districtIndicators, formatIndicator, indicatorValue, indicatorYear } from '../explorer/districtIndicator'
-import type { DistrictIndicator } from '../explorer/districtIndicator'
-import { formatSocioeconomicDifference } from './comparisonData'
+import { socioeconomicsQueryOptions } from '../../../data/socioeconomicsQuery'
+import type { District } from '../../../data/districtsQuery'
+import { districtIndicators, formatIndicator, indicatorValue, indicatorYear } from '../../explorer/districtIndicator'
+import type { DistrictIndicator } from '../../explorer/districtIndicator'
+import { formatSocioeconomicDifference } from '../comparisonData'
 
 const indicators: DistrictIndicator[] = ['poverty', 'idh', 'income']
 
-export function SocioeconomicComparison({ a, b }: { a: District; b: District }) {
+const SocioeconomicComparison = ({ a, b }: { a: District; b: District }) => {
   const valid = /^20\d{4}$/.test(a.ubigeo) && /^20\d{4}$/.test(b.ubigeo) && a.ubigeo !== b.ubigeo
   const queryA = useQuery({ ...socioeconomicsQueryOptions(a.ubigeo), enabled: valid })
   const queryB = useQuery({ ...socioeconomicsQueryOptions(b.ubigeo), enabled: valid })
@@ -80,3 +80,5 @@ export function SocioeconomicComparison({ a, b }: { a: District; b: District }) 
     </section>
   )
 }
+
+export default SocioeconomicComparison

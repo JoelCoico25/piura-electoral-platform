@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { SocioeconomicComparison } from './SocioeconomicComparison'
-import { ElectoralComparison } from './ElectoralComparison'
-import { ComparisonSelectors } from './ComparisonSelectors'
-import type { ComparisonLevel, ComparisonSelection } from './ComparisonSelectors'
+import SocioeconomicComparison from '../SocioeconomicComparison/SocioeconomicComparison'
+import ElectoralComparison from '../ElectoralComparison/ElectoralComparison'
+import ComparisonSelectors from '../ComparisonSelectors/ComparisonSelectors'
+import type { ComparisonLevel, ComparisonSelection } from '../ComparisonSelectors/ComparisonSelectors'
 
 const emptySelection: ComparisonSelection = { province: null, district: null }
 
-export function ComparePage() {
+const ComparePage = () => {
   const [level, setLevel] = useState<ComparisonLevel>('province')
   const [selections, setSelections] = useState({ a: emptySelection, b: emptySelection })
   const a = level === 'province' ? selections.a.province : selections.a.district
@@ -42,3 +42,5 @@ export function ComparePage() {
     </div>
   )
 }
+
+export default ComparePage

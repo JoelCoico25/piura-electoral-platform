@@ -1,5 +1,5 @@
 import MethodologyPage from '../features/methodology/MethodologyPage/MethodologyPage'
-import { ComparePage } from '../features/compare/ComparePage'
+import ComparePage from '../features/compare/ComparePage/ComparePage'
 import { lazy, Suspense } from 'react'
 import { loadExplorerPage } from './explorerModule'
 import { createBrowserRouter } from 'react-router'
