@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react'
-import { ElectoralResultsPanel } from './ElectoralResultsPanel'
-import { SocioeconomicPanel } from './SocioeconomicPanel'
+import ElectoralResultsPanel from './ElectoralResultsPanel/ElectoralResultsPanel'
+import SocioeconomicPanel from './SocioeconomicPanel/SocioeconomicPanel'
 import { ProvinceMap } from './ProvinceMap'
 import type { Territory } from './territorialData'
-import { TerritorySelectors } from './TerritorySelectors'
+import TerritorySelectors from './TerritorySelectors/TerritorySelectors'
 
 export function ExplorerPage() {
   const [province, setProvince] = useState<Territory | null>(null)

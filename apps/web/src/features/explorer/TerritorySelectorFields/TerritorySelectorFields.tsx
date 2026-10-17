@@ -1,25 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
-import { provincesQueryOptions } from '../../data/provincesQuery'
-import { districtsQueryOptions } from '../../data/districtsQuery'
-import type { Territory } from './territorialData'
+import { provincesQueryOptions } from '../../../data/provincesQuery'
+import { districtsQueryOptions } from '../../../data/districtsQuery'
+import type { Territory } from '../territorialData'
 
 type CatalogState = {
   status: 'idle' | 'loading' | 'success' | 'error'
   items: Territory[]
 }
 
-type SelectorProps = {
+export type SelectorProps = {
   province: Territory | null
   district: Territory | null
   onProvinceChange: (province: Territory | null) => void
   onDistrictChange: (district: Territory | null) => void
 }
 
-export function TerritorySelectors(props: SelectorProps) {
-  return <TerritorySelectorFields key={props.province?.ubigeo ?? 'none'} {...props} />
-}
-
-function TerritorySelectorFields({ province, district, onProvinceChange, onDistrictChange }: SelectorProps) {
+const TerritorySelectorFields = ({ province, district, onProvinceChange, onDistrictChange }: SelectorProps) => {
   const provincesQuery = useQuery(provincesQueryOptions)
   const provinces: CatalogState = {
     status: provincesQuery.isPending ? 'loading' : provincesQuery.isError ? 'error' : 'success',
@@ -75,3 +71,5 @@ function TerritorySelectorFields({ province, district, onProvinceChange, onDistr
     </section>
   )
 }
+
+export default TerritorySelectorFields

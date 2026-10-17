@@ -1,14 +1,14 @@
-import { decimalFormat, integerFormat } from '../../lib/numberFormat'
+import { decimalFormat, integerFormat } from '../../../lib/numberFormat'
 import { useQuery } from '@tanstack/react-query'
-import { electionsQueryOptions } from '../../data/electionsQuery'
-import type { ElectoralResult } from './electoralData'
-import type { Territory } from './territorialData'
+import { electionsQueryOptions } from '../../../data/electionsQuery'
+import type { ElectoralResult } from '../electoralData'
+import type { Territory } from '../territorialData'
 
 type ResultsState = { status: 'loading' } | { status: 'error' } | { status: 'success'; results: ElectoralResult[] }
 const percentage = decimalFormat
 const count = integerFormat
 
-export function ElectoralResultsPanel({ territory }: { territory: Territory }) {
+const ElectoralResultsPanel = ({ territory }: { territory: Territory }) => {
   const query = useQuery(electionsQueryOptions(territory.ubigeo))
   const state: ResultsState = query.isPending ? { status: 'loading' } : query.isError
     ? { status: 'error' } : { status: 'success', results: query.data }
@@ -49,3 +49,5 @@ export function ElectoralResultsPanel({ territory }: { territory: Territory }) {
     </section>
   )
 }
+
+export default ElectoralResultsPanel
