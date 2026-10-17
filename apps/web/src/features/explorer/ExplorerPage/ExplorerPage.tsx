@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
-import ElectoralResultsPanel from './ElectoralResultsPanel/ElectoralResultsPanel'
-import SocioeconomicPanel from './SocioeconomicPanel/SocioeconomicPanel'
-import ProvinceMap from './ProvinceMap/ProvinceMap'
-import type { Territory } from './territorialData'
-import TerritorySelectors from './TerritorySelectors/TerritorySelectors'
+import ElectoralResultsPanel from '../ElectoralResultsPanel/ElectoralResultsPanel'
+import SocioeconomicPanel from '../SocioeconomicPanel/SocioeconomicPanel'
+import ProvinceMap from '../ProvinceMap/ProvinceMap'
+import type { Territory } from '../territorialData'
+import TerritorySelectors from '../TerritorySelectors/TerritorySelectors'
 
-export function ExplorerPage() {
+const ExplorerPage = () => {
   const [province, setProvince] = useState<Territory | null>(null)
   const [district, setDistrict] = useState<Territory | null>(null)
   const selectProvince = useCallback((selected: Territory | null) => {
@@ -31,3 +31,5 @@ export function ExplorerPage() {
     </div>
   )
 }
+
+export default ExplorerPage
