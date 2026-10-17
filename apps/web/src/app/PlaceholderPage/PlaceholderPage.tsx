@@ -1,4 +1,4 @@
-export function PlaceholderPage({ title }: { title: string }) {
+const PlaceholderPage = ({ title }: { title: string }) => {
   return (
     <section aria-label={title}>
       <h1>{title}</h1>
@@ -7,6 +7,4 @@ export function PlaceholderPage({ title }: { title: string }) {
   )
 }
 
-export function NotFoundPage() {
-  return <h1>Página no encontrada</h1>
-}
+export default PlaceholderPage

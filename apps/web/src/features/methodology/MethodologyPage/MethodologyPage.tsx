@@ -1,4 +1,4 @@
-export function MethodologyPage() {
+const MethodologyPage = () => {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-4 text-2xl font-semibold tracking-tight">Metodología</h1>
@@ -294,3 +294,5 @@ export function MethodologyPage() {
     </div>
   )
 }
+
+export default MethodologyPage
