@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import ElectoralResultsPanel from './ElectoralResultsPanel/ElectoralResultsPanel'
 import SocioeconomicPanel from './SocioeconomicPanel/SocioeconomicPanel'
-import { ProvinceMap } from './ProvinceMap'
+import ProvinceMap from './ProvinceMap/ProvinceMap'
 import type { Territory } from './territorialData'
 import TerritorySelectors from './TerritorySelectors/TerritorySelectors'
 
