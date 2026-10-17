@@ -1,4 +1,4 @@
-﻿# Piura Electoral — frontend
+# Piura Electoral — frontend
 
 SPA con React 19, TypeScript estricto, Vite 8 y Tailwind CSS v4. Utiliza React Router, TanStack Query y React Leaflet.
 
@@ -27,7 +27,7 @@ src/features/methodology/ MethodologyPage/MethodologyPage.tsx
 src/data/                 Consultas compartidas de TanStack Query
 src/lib/                  Formato numérico centralizado es-PE
 tests/                    Pruebas unitarias con Bun
-public/geo/               Geometrías locales excluidas de Git
+public/geo/               Geometrías IGN autorizadas y atribución ODC-By
 ```
 
 Los componentes tienen carpeta y archivo principal propios en PascalCase, se declaran con `const` y función flecha y utilizan `export default`. Los módulos de datos, tipos y funciones puras conservan exports nombrados.
@@ -62,6 +62,6 @@ El preview requiere build previo y suele usar el puerto 4173: no coincide con el
 
 Para Vercel, la raíz es `apps/web`, la salida es `dist` y `vercel.json` configura el fallback SPA sin reescribir `/api`, `/geo` ni `/assets` como HTML.
 
-Los mapas necesitan `public/geo/piura-provincias.geojson` y `public/geo/piura-distritos.geojson`. No se regeneran durante el build y están excluidos del repositorio. Antes de distribuirlos deben revisarse las condiciones de uso descritas en [fuentes y trazabilidad](../../docs/mapeo_fuentes.md).
+Los mapas necesitan `public/geo/piura-provincias.geojson` y `public/geo/piura-distritos.geojson`. Son derivados del recurso distrital IGN bajo ODC-By y se incluyen en el repositorio junto con su atribución. No se regeneran durante el build. Deben conservarse los avisos y condiciones descritos en [fuentes y trazabilidad](../../docs/mapeo_fuentes.md).
 
 No versionar `.env.local`, `.mcp.json`, dependencias ni builds. El [README principal](../../README.md) presenta las funcionalidades y los límites de cobertura del proyecto.

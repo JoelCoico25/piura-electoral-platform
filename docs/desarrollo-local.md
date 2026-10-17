@@ -1,4 +1,4 @@
-﻿# Desarrollo local de Piura Electoral
+# Desarrollo local de Piura Electoral
 
 Guía técnica para preparar el entorno. Para conocer las funcionalidades, consulta el [README principal](../README.md).
 
@@ -135,12 +135,12 @@ El frontend dispone de 36 pruebas unitarias con Bun, fixtures sintéticos y sin 
 
 - **Restaurar la base:** los seis CSV procesados, el esquema y `002_load_all.sql` permiten cargar los datos procesados locales sin los originales ni Python. No ejecutar importaciones sobre una base con datos.
 - **Regenerar los CSV:** `build_import.py` requiere catálogo y archivos electorales originales mediante `--catalog`, `--round1`, `--round2`. `build_socioeconomic.py` requiere libros originales mediante `--poverty`, `--development`, el catálogo distrital procesado y la dependencia externa `artifact_tool`. Los originales no se incluyen y este repositorio no proporciona un entorno completo de esa herramienta.
-- **Mapas:** la aplicación necesita `apps/web/public/geo/piura-provincias.geojson` y `piura-distritos.geojson`. No se generan mediante el build ni mediante los importadores anteriores. Los GeoPackage originales y un conversor cartográfico ejecutable no se incluyen.
-- **Referencias:** elecciones ONPE 2021; pobreza INEI 2018; IDH e ingreso PNUD 2019; catálogo identificado como 2022; cartografía atribuida a IDE INEI, documentada como actualizada a 2023. No representan una medición simultánea ni permiten inferir causalidad.
+- **Mapas:** la aplicación necesita `apps/web/public/geo/piura-provincias.geojson` y `piura-distritos.geojson`. Se incluyen los derivados IGN bajo ODC-By y su atribución. No se generan mediante el build ni mediante los importadores anteriores. Los originales cartográficos no se incluyen.
+- **Referencias:** elecciones ONPE 2021; pobreza INEI 2018; IDH e ingreso PNUD 2019; catálogo identificado como 2022; cartografía derivada del recurso distrital IGN publicado en 2025, sin fecha acreditada de vigencia territorial. No representan una medición simultánea ni permiten inferir causalidad.
 
-Las licencias de redistribución de varias fuentes, incluidas las geometrías, siguen pendientes de verificación. La presencia local de CSV y GeoJSON no acredita autorización para publicarlos. Los seis CSV procesados y los dos GeoJSON están excluidos de Git: un clon del repositorio no reproduce por sí solo el funcionamiento completo. Deben obtenerse por un procedimiento autorizado antes de cargar la base o utilizar los mapas. Tampoco puede garantizarse la regeneración desde originales externos no incluidos. Ver [trazabilidad documentada](mapeo_fuentes.md) y la página `/metodologia`.
+La redistribución de pobreza, IDH/ingresos y catálogo UBIGEO sigue pendiente de acreditar. Los seis CSV procesados están excluidos de Git y deben obtenerse por un procedimiento autorizado antes de cargar la base. Los dos GeoJSON IGN se distribuyen bajo ODC-By junto con su atribución; un clon incluye geometrías, pero no permite reconstruir por sí solo la base completa. Tampoco puede garantizarse la regeneración desde originales externos no incluidos. Ver [trazabilidad documentada](mapeo_fuentes.md) y la página `/metodologia`.
 
-Las publicaciones oficiales de ONPE, INEI y PNUD están identificadas en la documentación de trazabilidad. La auditoría confirmó coincidencias numéricas para 130 resultados electorales distritales y los indicadores de pobreza y desarrollo de 65 distritos, sin demostrar identidad binaria de los archivos históricos. La referencia de pobreza se corrigió a la hoja `A3.22`. ONPE declara ODC-By con obligaciones de atribución; la autorización de redistribución de pobreza, IDH e ingresos, catálogo UBIGEO y cartografía sigue sin acreditarse. El importador electoral convierte determinados campos vacíos en cero; la interfaz conserva `null` como no disponible. La cobertura socioeconómica es distrital y sus diferencias solo se calculan entre años iguales.
+Las publicaciones oficiales de ONPE, INEI y PNUD están identificadas en la documentación de trazabilidad. La auditoría confirmó coincidencias numéricas para 130 resultados electorales distritales y los indicadores de pobreza y desarrollo de 65 distritos, sin demostrar identidad binaria de los archivos históricos. La referencia de pobreza se corrigió a la hoja `A3.22`. ONPE declara ODC-By con obligaciones de atribución; la autorización de redistribución de pobreza, IDH e ingresos, catálogo UBIGEO sigue sin acreditarse; la cartografía vigente procede de IGN bajo ODC-By. El importador electoral convierte determinados campos vacíos en cero; la interfaz conserva `null` como no disponible. La cobertura socioeconómica es distrital y sus diferencias solo se calculan entre años iguales.
 
 Estas instrucciones corresponden a los scripts existentes; no certifican una instalación nueva de extremo a extremo. La configuración MCP es opcional para la aplicación y debe permanecer local.
 
@@ -150,7 +150,7 @@ Estas instrucciones corresponden a los scripts existentes; no certifican una ins
 |---|---|
 | No se inicia PostgreSQL | Comprobar que Docker esté en ejecución y que el puerto local 5433 esté libre. |
 | Fallo de autenticación | Revisar la correspondencia entre la contraseña local y `DATABASE_URL`. Cambiar `.env` no modifica un volumen ya inicializado. |
-| Faltan CSV o geometrías | Estos recursos están excluidos del repositorio; revisar su disponibilidad y condiciones de uso. El build no los regenera. |
+| Faltan CSV o geometrías | Los CSV están excluidos; las geometrías IGN sí están versionadas. Revisar disponibilidad y atribución. El build no regenera ninguno de estos recursos. |
 | El esquema ya existe | No repetir la carga inicial. Ejecutar la verificación y revisar cualquier carga parcial antes de intervenir. |
 | Error de métricas o CORS | Comprobar `/api/v1/health`, `VITE_API_BASE_URL` y el origen exacto de `CORS_ORIGIN`. |
 | El frontend consulta el puerto 5173 como API | Configurar `VITE_API_BASE_URL` y reiniciar Vite; reconstruir el frontend si se utiliza `dist/`. |
@@ -164,4 +164,4 @@ La aplicación todavía no tiene una demo pública documentada. La configuració
 - API: raíz `apps/api`, build `npm ci --include=dev && npm run build`, inicio `npm start`, `HOST=0.0.0.0`, `PORT` asignado por el proveedor, `CORS_ORIGIN` HTTPS exacto y `DATABASE_URL` solo en el backend.
 - `VITE_API_BASE_URL` debe ser el origen HTTPS de la API, sin `/api/v1`. Swagger utiliza el mismo origen de la API mediante una URL relativa.
 - Los scripts Bash de migración están orientados a Docker local. Una base gestionada requiere un procedimiento de carga independiente; no ejecutar los scripts suponiendo que apuntan a producción.
-- Antes de publicar, resolver el suministro y las condiciones de redistribución de datos y geometrías. Subir un `dist/` local puede incluir GeoJSON copiados desde `public/` aunque estén ignorados por Git.
+- Antes de publicar datos, resolver sus condiciones de redistribución. Las geometrías IGN versionadas se copian desde `public/` a `dist/` con su aviso ODC-By; no añadir los originales anteriores ni otros recursos ignorados al artefacto.

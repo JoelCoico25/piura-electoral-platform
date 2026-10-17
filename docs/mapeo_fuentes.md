@@ -24,13 +24,15 @@ Los nombres locales identifican archivos históricos; las coincidencias numéric
 - **INEI, Mapa de Pobreza Provincial y Distrital 2018:** [publicaciones de pobreza](https://www1.inei.gob.pe/cifras-de-pobreza/) y [anexo estadístico oficial](https://www.inei.gob.pe/media/MenuRecursivo/publicaciones_digitales/Est/Lib1718/Anexos.xlsx). Los límites inferior y superior coinciden para 65 distritos. La hoja utilizada por el importador es **A3.22**, no `Anexo1`; queda corregida la referencia anterior. El punto medio es una transformación de la plataforma, no una medición puntual independiente de INEI. El nivel de confianza del intervalo no está documentado en la evidencia revisada.
 - **PNUD, El reto de la igualdad, datos IDH 2019:** [publicación](https://www.undp.org/es/peru/publicaciones/el-reto-de-la-igualdad) y [libro oficial IDH-2019.xlsx](https://www.undp.org/sites/g/files/zskgke326/files/migration/pe/IDH-2019.xlsx). La hoja `Distrital` presenta valores coincidentes de IDH e ingreso familiar per cápita mensual para 65 distritos. Son valores importados, no indicadores reconstruidos por la plataforma.
 - **Catálogo UBIGEO:** `UBIGEOS_2022_1891_distritos.csv`; la procedencia institucional original sigue pendiente. El año del nombre del archivo no acredita por sí solo su origen o vigencia histórica.
-- **Cartografía IDE INEI:** [portal oficial](https://ide.inei.gob.pe/), con las capas y conversiones descritas a continuación. Los GeoJSON locales coinciden con los GeoPackage temporales examinados; no existe cotejo binario con una descarga cartográfica actual ni validación topológica completa. La coincidencia de UBIGEO no demuestra estabilidad histórica de límites.
+- **Cartografía anterior IDE INEI (sustituida; no distribuida):** [portal oficial](https://ide.inei.gob.pe/), con las capas y conversiones descritas a continuación. Los GeoJSON locales coinciden con los GeoPackage temporales examinados; no existe cotejo binario con una descarga cartográfica actual ni validación topológica completa. La coincidencia de UBIGEO no demuestra estabilidad histórica de límites.
 
-**Redistribución pendiente:** no se ha acreditado autorización para redistribuir los datos de pobreza, IDH e ingresos, el catálogo UBIGEO ni las geometrías. Identificar una publicación oficial o comprobar coincidencias numéricas no acredita ese permiso; tampoco se afirma una prohibición expresa. La declaración ODC-By corresponde a los conjuntos ONPE identificados y no se extiende automáticamente a las demás fuentes.
+**Redistribución pendiente:** no se ha acreditado autorización para redistribuir los datos de pobreza, IDH e ingresos, el catálogo UBIGEO ni las geometrías anteriores de IDE INEI. La cartografía vigente del mapa se deriva del recurso IGN bajo ODC-By descrito abajo. Identificar una publicación oficial o comprobar coincidencias numéricas no acredita ese permiso; tampoco se afirma una prohibición expresa. La declaración ODC-By corresponde a los conjuntos ONPE identificados y no se extiende automáticamente a las demás fuentes.
 
 ## Contrato de calidad
 
-### Cartografía provincial de Piura
+Las secciones IDE INEI siguientes conservan la trazabilidad histórica: describen archivos anteriores respaldados fuera del repositorio. No describen los GeoJSON actualmente distribuidos, que proceden del recurso IGN documentado al final.
+
+### Cartografía provincial anterior de Piura (IDE INEI; sustituida)
 
 - Archivo preparado: `apps/web/public/geo/piura-provincias.geojson`.
 - Institución responsable: Instituto Nacional de Estadística e Informática (INEI).
@@ -48,7 +50,7 @@ Los nombres locales identifican archivos históricos; las coincidencias numéric
 - Las correlaciones y agregaciones socioeconómicas no se materializan ni se interpretan causalmente.
 - El esquema es una primera migración; si el dataset procesado tiene columnas adicionales útiles, se incorporarán con una segunda migración revisada.
 
-### Cartografía distrital de Piura
+### Cartografía distrital anterior de Piura (IDE INEI; sustituida)
 
 - Archivo preparado: `apps/web/public/geo/piura-distritos.geojson` (2.416.335 bytes).
 - Institución: INEI. Original: https://ide.inei.gob.pe/files/Distrito.rar, publicado en https://ide.inei.gob.pe/ como actualizado al **2023**; contiene `DISTRITO.gpkg`. El atributo `fuente` indica «V Censo Nacional Economico». La fecha técnica del GeoPackage (2026-03-06) no sustituye la referencia temporal publicada.
@@ -66,3 +68,37 @@ psql -v ON_ERROR_STOP=1 -d piura_electoral -f database/migrations/001_initial_sc
 ```
 
 La migración debe ejecutarse sobre una base de datos vacía; todavía no hay un importador ni datos cargados.
+
+## Cartografía vigente: derivados del recurso distrital IGN
+
+Consulta y conversión: **17 de octubre de 2026**. Distribuidor: Instituto Geográfico Nacional (IGN), Plataforma Nacional de Datos Abiertos. El atributo `FUENTE` del shapefile indica `INEI`; se conserva esta atribución en los avisos. Los límites son referenciales, escala **1:100,000**, no una delimitación legal certificada.
+
+- Conjunto y licencia declarada: https://www.datosabiertos.gob.pe/dataset/limites-departamentales
+- Recurso vinculado al conjunto: https://www.datosabiertos.gob.pe/dataset/limites-departamentales/resource/a43e17c8-fa37-463d-aa7e-2ce2a272491b
+- Descarga: https://www.datosabiertos.gob.pe/sites/default/files/DISTRITOS_LIMITES.zip
+- Licencia: **Open Data Commons Attribution (ODC-By)**, https://opendatacommons.org/licenses/by/1-0/
+- La ficha del conjunto declara ODC-By y enlaza este recurso y este ZIP. La página del recurso identifica `DISTRITOS_LIMITES.zip` y fecha de publicación **24 de junio de 2025**. Esta fecha no demuestra vigencia de límites en 2021, 2023 o 2025; no se identificó una versión territorial explícita.
+- ZIP: **18,752,137 bytes**, SHA-256 `6e305a08b5324f40095f9d77bcdcab3f313e890ca56dda1ff4813ad2564e1842`. Integridad CRC comprobada. El original y las copias de los GeoJSON anteriores permanecen fuera del repositorio.
+- El ZIP contiene shapefile con sus archivos auxiliares, proyección WGS84 geográfica y 1,891 entidades nacionales. Solo se utilizan los 65 distritos con `CODDEP = '20'`.
+
+### Conversión y validación
+
+Se utilizó Python 3.13 con PyShp 3.1.6, Shapely 2.2.0 y GEOS 3.14.1, instalados exclusivamente en un directorio temporal; no se añadieron dependencias al frontend.
+
+1. Leer `DISTRITOS.shp` con su DBF y PRJ; comprobar WGS84. Filtrar `CODDEP = '20'`, conservar `UBIGEO` como texto y comprobar su pertenencia mediante `CODDEP + CODPROV`.
+2. Consultar el catálogo real de PostgreSQL mediante `GET /api/v1/provincias` y sus ocho rutas `GET /api/v1/provincias/:ubigeo/distritos`. Comparar códigos y pertenencias: exactamente 8 provincias y 65 distritos; cero faltantes, sobrantes o duplicados. No se conciliaron entidades por nombre.
+3. Convertir los distritos a `MultiPolygon`; conservar únicamente `ubigeo`, `nombre` desde `DISTRITO` y `provincia_ubigeo = ubigeo[:4]`.
+4. Agrupar las geometrías distritales por UBIGEO provincial y aplicar `shapely.union_all` sin cuadrícula de ajuste ni simplificación. Convertir cada resultado a `MultiPolygon`; las provincias son **geometrías derivadas**, no una descarga provincial independiente. Sus nombres proceden del catálogo de la aplicación, enlazados por UBIGEO.
+5. Normalizar orientación RFC 7946 con exteriores antihorarios e interiores horarios. Serializar FeatureCollection UTF-8, coordenadas longitud/latitud WGS84, sin miembro `crs`, redondeo ni simplificación adicionales.
+6. Verificar códigos únicos, geometrías no vacías, coordenadas finitas y en el ámbito de Piura, anillos cerrados y validez geométrica individual con GEOS: **65/65 distritos y 8/8 provincias válidos**, sin reparaciones. Esta comprobación no certifica cobertura sin huecos/solapamientos entre entidades ni estabilidad histórica de los límites.
+
+| Archivo distribuido | Entidades | Bytes | SHA-256 |
+|---|---:|---:|---|
+| `apps/web/public/geo/piura-provincias.geojson` | 8 | 1,059,669 | `833c75e8dde25786f0e1d9d7e29120c83325670af3849d8f7f939025d8010d96` |
+| `apps/web/public/geo/piura-distritos.geojson` | 65 | 2,416,336 | `05f882783bf6d8390564c41ea28e6d4a5a95ebc1651853b062238de62e0b417b` |
+
+### Atribución y distribución
+
+Los dos derivados se distribuyen bajo ODC-By, conservando la referencia IGN y el atributo de fuente INEI. El aviso público se incluye en la atribución del mapa y junto a los archivos en `apps/web/public/geo/ATRIBUCION.md`, con enlaces al conjunto y a la licencia. Deben conservarse esos avisos al reutilizar los archivos. ODC-By no se extiende automáticamente a otras fuentes ni resuelve derechos independientes que pudieran existir sobre contenidos concretos; no se encontraron avisos adicionales de restricción en los metadatos XML inspeccionados.
+
+Solo estos dos GeoJSON tienen excepciones explícitas en `.gitignore`. Los CSV procesados y cualquier otra cartografía bajo `public/geo/` siguen excluidos. Los GeoJSON anteriores no se versionan ni se incluyen en el build actual. Las advertencias de redistribución pendientes para pobreza, IDH/ingresos y catálogo UBIGEO permanecen vigentes.

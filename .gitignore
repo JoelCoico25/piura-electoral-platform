@@ -77,3 +77,6 @@ Thumbs.db
 
 /database/processed/*.csv
 /apps/web/public/geo/*.geojson
+# Authorized IGN derivatives only; other cartography remains ignored
+!/apps/web/public/geo/piura-provincias.geojson
+!/apps/web/public/geo/piura-distritos.geojson

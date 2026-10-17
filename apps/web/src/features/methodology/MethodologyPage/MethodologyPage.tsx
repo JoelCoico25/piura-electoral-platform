@@ -107,14 +107,14 @@ const MethodologyPage = () => {
                 </dd>
               </div>
               <div className="py-4 last:pb-0">
-                <dt className="font-medium">Cartografía provincial y distrital · IDE INEI</dt>
+                <dt className="font-medium">Cartografía provincial y distrital · IGN</dt>
                 <dd className="mt-2 max-w-3xl space-y-2 leading-relaxed text-slate-600">
-                  <p>Geometrías atribuidas al portal de la Infraestructura de Datos Espaciales del INEI y documentadas como actualizadas a 2023.</p>
+                  <p>Derivadas del recurso distrital publicado por IGN bajo ODC-By, escala referencial 1:100,000. El atributo de fuente indica INEI. La publicación del recurso es del 24 de junio de 2025; no acredita la vigencia histórica de los límites.</p>
                   <ul className="flex flex-wrap gap-x-5 gap-y-2">
                     {[
-                      { label: 'Portal IDE INEI', href: 'https://ide.inei.gob.pe/' },
-                      { label: 'Archivo provincial (RAR)', href: 'https://ide.inei.gob.pe/files/Provincia.rar' },
-                      { label: 'Archivo distrital (RAR)', href: 'https://ide.inei.gob.pe/files/Distrito.rar' },
+                      { label: 'Conjunto IGN', href: 'https://www.datosabiertos.gob.pe/dataset/limites-departamentales' },
+                      { label: 'Licencia ODC-By', href: 'https://opendatacommons.org/licenses/by/1-0/' },
+                      { label: 'Distritos IGN (ZIP)', href: 'https://www.datosabiertos.gob.pe/sites/default/files/DISTRITOS_LIMITES.zip' },
                     ].map(({ label, href }) => (
                       <li key={href}><a href={href} target="_blank" rel="noopener noreferrer" className="rounded text-teal-700 underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">{label}<span className="sr-only"> (abre en otra pestaña)</span></a></li>
                     ))}
@@ -253,10 +253,10 @@ const MethodologyPage = () => {
             <span className="mt-1 block text-xs leading-relaxed text-slate-600">Procedencia, formato y verificaciones pendientes de las geometrías.</span>
           </summary>
           <div className="max-w-3xl space-y-3 pb-4 pt-1 text-sm leading-relaxed text-slate-600">
-            <p>Las geometrías provinciales y distritales se atribuyen al portal IDE INEI. Los archivos están documentados como actualizados a 2023.</p>
-            <p>El procesamiento documentado filtra los territorios de Piura y convierte las geometrías a GeoJSON MultiPolygon en WGS84, con coordenadas en longitud y latitud. No se aplicó simplificación geométrica.</p>
-            <p>No consta una validación topológica completa; no se garantiza la ausencia de autointersecciones o solapamientos. La licencia de redistribución de las geometrías está pendiente de verificación.</p>
-            <p>Los GeoJSON locales coinciden con los GeoPackage temporales examinados. No se realizó un cotejo binario con una descarga cartográfica actual.</p>
+            <p>Las geometrías derivan del recurso distrital IGN bajo ODC-By, consultado el 17 de octubre de 2026. El atributo de fuente indica INEI. Se conservan sus avisos de atribución.</p>
+            <p>Se filtra Piura por código de departamento 20 y se convierte a GeoJSON MultiPolygon en WGS84, longitud y latitud, sin simplificación. Las ocho provincias son geometrías derivadas mediante unión de sus distritos por UBIGEO provincial.</p>
+            <p>Se comprobó la validez geométrica individual con GEOS para los 65 distritos y las ocho provincias derivadas. Esto no certifica exactitud territorial ni descarta por sí solo huecos o solapamientos entre entidades.</p>
+            <p>Los 8 y 65 UBIGEO coinciden exactamente con el catálogo consultado en PostgreSQL mediante la API. El ZIP original se identifica por SHA-256 en la documentación de fuentes.</p>
             <p>La coincidencia de UBIGEO no demuestra por sí sola la estabilidad histórica de los límites territoriales.</p>
           </div>
         </details>
@@ -273,7 +273,7 @@ const MethodologyPage = () => {
             <p>Las comparaciones son descriptivas, no causales. No permiten concluir que un indicador provoque cambios en otro.</p>
             <p>Los ingresos no están ajustados por inflación en el procesamiento revisado. El nivel de confianza de los intervalos de pobreza no está documentado. La información socioeconómica solo está disponible a nivel distrital.</p>
             <p>En la interfaz, los valores null se presentan como no disponibles. En cambio, el importador electoral convierte determinados campos vacíos de votantes y electores hábiles en cero. No todos los valores ausentes se preservan como null.</p>
-            <p>Las publicaciones oficiales de ONPE, INEI y PNUD están identificadas, pero la trazabilidad histórica no está completa. ONPE declara ODC-By con obligaciones de atribución. No se ha acreditado autorización de redistribución para pobreza, IDH e ingresos, catálogo UBIGEO ni cartografía; no se presupone una licencia abierta para estos recursos.</p>
+            <p>Las publicaciones oficiales de ONPE, INEI y PNUD están identificadas, pero la trazabilidad histórica no está completa. ONPE y el conjunto cartográfico IGN utilizado declaran ODC-By con obligaciones de atribución. No se ha acreditado autorización de redistribución para pobreza, IDH e ingresos ni catálogo UBIGEO; no se presupone una licencia abierta para estos recursos.</p>
           </div>
         </details>
       </section>

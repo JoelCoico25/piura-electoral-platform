@@ -1,4 +1,4 @@
-﻿# Piura Electoral
+# Piura Electoral
 
 **Exploración territorial de la participación electoral y los indicadores socioeconómicos de Piura, Perú.**
 
@@ -38,11 +38,11 @@ Los porcentajes provienen de la API; los agregados suman conteos antes de calcul
 | Pobreza monetaria distrital e intervalos | INEI | 2018 |
 | IDH e ingreso familiar per cápita mensual | PNUD | 2019 |
 | Catálogo UBIGEO | Procedencia institucional original pendiente | Archivo identificado como 2022 |
-| Cartografía provincial y distrital | IDE INEI | Límites documentados como actualizados a 2023 |
+| Cartografía provincial y distrital | IGN, conjunto publicado bajo ODC-By; atributo de fuente INEI | Recurso publicado el 24 de junio de 2025; vigencia de límites no acreditada |
 
 Estos años **no representan una medición simultánea**. Las comparaciones son descriptivas y no permiten inferir causalidad. El punto medio del intervalo de pobreza es una transformación de la plataforma, no una medición puntual independiente publicada por INEI.
 
-Los conjuntos ONPE identificados declaran **ODC-By**, con obligaciones de atribución. La autorización de redistribución de pobreza, IDH e ingresos, catálogo UBIGEO y cartografía sigue sin acreditarse. Los seis CSV procesados y los dos GeoJSON están excluidos de Git; un clon no incluye los recursos necesarios para reproducir el MVP completo.
+Los conjuntos ONPE identificados y la cartografía IGN utilizada declaran **ODC-By**, con obligaciones de atribución. Los mapas incluyen derivados del recurso distrital IGN: filtrado de Piura, conversión a GeoJSON y unión distrital para las provincias. La autorización de redistribución de pobreza, IDH e ingresos y catálogo UBIGEO sigue sin acreditarse. Los seis CSV procesados están excluidos de Git; un clon incluye las geometrías autorizadas, pero no los datos necesarios para reconstruir la base completa.
 
 Consulta las [fuentes y su trazabilidad](docs/mapeo_fuentes.md) para conocer correspondencias, transformaciones y condiciones pendientes.
 

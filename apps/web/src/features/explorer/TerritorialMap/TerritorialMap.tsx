@@ -92,7 +92,7 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
                 style={{ color: '#0f766e', weight: selected ? 3 : 1.5,
                   fillColor: selectedProvinceId ? indicatorColor(indicatorValue(data, districtIndicator), districtIndicator) : participationColor(value),
                   fillOpacity: 0.85 }}
-                attribution="Fuente: INEI · Límites publicados al 2023"
+                attribution='Fuente: <a href="https://www.datosabiertos.gob.pe/dataset/limites-departamentales" target="_blank" rel="noopener noreferrer">IGN (atributo fuente: INEI)</a> · <a href="https://opendatacommons.org/licenses/by/1-0/" target="_blank" rel="noopener noreferrer">ODC-By</a> · Piura: filtro y conversión; provincias por unión distrital'
                 eventHandlers={{ click: () => {
                   const territory = { ubigeo: code, nombre: feature.properties.nombre }
                   if (selectedProvinceId) onDistrictChange(territory)
