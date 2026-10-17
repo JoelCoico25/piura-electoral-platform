@@ -4,7 +4,7 @@ import { lazy, Suspense } from 'react'
 import { loadExplorerPage } from './explorerModule'
 import { createBrowserRouter } from 'react-router'
 import App from './App/App'
-import { HomePage } from '../features/home/HomePage'
+import HomePage from '../features/home/HomePage/HomePage'
 import { NotFoundPage } from './PlaceholderPages'
 
 const lazyPages = {

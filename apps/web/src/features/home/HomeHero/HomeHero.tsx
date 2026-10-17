@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 
-export function HomeHero() {
+const HomeHero = () => {
   return (
     <section
       aria-labelledby="home-hero-title"
@@ -51,3 +51,5 @@ export function HomeHero() {
     </section>
   )
 }
+
+export default HomeHero

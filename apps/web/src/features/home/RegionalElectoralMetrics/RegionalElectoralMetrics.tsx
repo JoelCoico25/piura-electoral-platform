@@ -1,10 +1,10 @@
-import { createNumberFormatter, decimalFormat, integerFormat } from '../../lib/numberFormat'
-import { electionsQueryOptions } from '../../data/electionsQuery'
+import { createNumberFormatter, decimalFormat, integerFormat } from '../../../lib/numberFormat'
+import { electionsQueryOptions } from '../../../data/electionsQuery'
 import { useQueries, useQuery } from '@tanstack/react-query'
-import { districtsQueryOptions } from '../../data/districtsQuery'
-import { provincesQueryOptions } from '../../data/provincesQuery'
-import { regionalParticipation, regionalTerritorialScope } from './regionalElectoralData'
-import type { RegionalParticipation, RegionalTerritorialScope } from './regionalElectoralData'
+import { districtsQueryOptions } from '../../../data/districtsQuery'
+import { provincesQueryOptions } from '../../../data/provincesQuery'
+import { regionalParticipation, regionalTerritorialScope } from '../regionalElectoralData'
+import type { RegionalParticipation, RegionalTerritorialScope } from '../regionalElectoralData'
 
 type MetricsState =
   | { status: 'loading' }
@@ -18,7 +18,7 @@ const variationFormat = createNumberFormatter({
   signDisplay: 'always',
 })
 
-export function RegionalElectoralMetrics() {
+const RegionalElectoralMetrics = () => {
   const provincesQuery = useQuery(provincesQueryOptions)
   const provinces = provincesQuery.data
   const districtQueries = useQueries({ queries: (provinces ?? []).map(province => districtsQueryOptions(province.ubigeo)) })
@@ -82,3 +82,5 @@ export function RegionalElectoralMetrics() {
     </section>
   )
 }
+
+export default RegionalElectoralMetrics
