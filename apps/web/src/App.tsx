@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router'
-import { AppFooter } from './components/layout/AppFooter'
+import AppFooter from './components/layout/AppFooter/AppFooter'
 import { AppHeader } from './components/layout/AppHeader'
 
 function App() {

@@ -6,7 +6,7 @@ const socialLinks = [
   { name: 'GitHub', href: 'https://github.com/JoelCoico25', path: 'M9 19c-4 1-4-2-6-2 M15 22v-4a3.5 3.5 0 0 0-1-3c3-.4 6-1.5 6-6a5 5 0 0 0-1.5-3.5A4.5 4.5 0 0 0 18.4 2S17 1.6 14.5 3a13 13 0 0 0-5 0C7 1.6 5.6 2 5.6 2a4.5 4.5 0 0 0-.1 3.5A5 5 0 0 0 4 9c0 4.5 3 5.6 6 6a3.5 3.5 0 0 0-1 3v4' },
 ]
 
-export function AppFooter() {
+const AppFooter = () => {
   return (
     <footer className="border-t border-slate-200 bg-white text-sm text-slate-600">
       <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
@@ -43,3 +43,5 @@ export function AppFooter() {
     </footer>
   )
 }
+
+export default AppFooter
