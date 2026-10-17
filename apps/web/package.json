@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "bun --no-env-file test ./tests",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.tests.json --noEmit",
     "typecheck:tests": "tsc -p tsconfig.tests.json --noEmit"
   },
   "dependencies": {
