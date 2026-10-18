@@ -2,6 +2,8 @@
 
 SPA con React 19, TypeScript estricto, Vite 8 y Tailwind CSS v4. Utiliza React Router, TanStack Query y React Leaflet.
 
+[Aplicación publicada](https://piuraelectoral.vercel.app/) · [Presentación y capturas](../../README.md) · [Desarrollo local](../../docs/desarrollo-local.md)
+
 ## Puesta en marcha
 
 Preparar PostgreSQL, datos y API según la [guía de desarrollo local](../../docs/desarrollo-local.md). Allí se detallan Node, Bun, Docker y las alternativas Bash y PowerShell.
@@ -28,6 +30,8 @@ src/data/                 Consultas compartidas de TanStack Query
 src/lib/                  Formato numérico centralizado es-PE
 tests/                    Pruebas unitarias con Bun
 public/geo/               Geometrías IGN autorizadas y atribución ODC-By
+public/og-image.png       Captura real de Inicio para Open Graph y Twitter Card
+public/favicon.svg        Símbolo geográfico de la aplicación
 ```
 
 Los componentes tienen carpeta y archivo principal propios en PascalCase, se declaran con `const` y función flecha y utilizan `export default`. Los módulos de datos, tipos y funciones puras conservan exports nombrados.
@@ -60,7 +64,7 @@ bun run preview
 
 El preview requiere build previo y suele usar el puerto 4173: no coincide con el origen 5173 del ejemplo de CORS. Es un servidor de comprobación local, no el servidor de producción.
 
-Para Vercel, la raíz es `apps/web`, la salida es `dist` y `vercel.json` configura el fallback SPA sin reescribir `/api`, `/geo` ni `/assets` como HTML.
+Para Vercel, la raíz es `apps/web`, la salida es `dist` y `vercel.json` configura el fallback SPA sin reescribir `/api`, `/geo` ni `/assets` como HTML. `index.html` define el idioma español, título, descripción, canonical y metadatos sociales con URL absoluta de la imagen; los recursos de `public/` se copian al build.
 
 Los mapas necesitan `public/geo/piura-provincias.geojson` y `public/geo/piura-distritos.geojson`. Son derivados del recurso distrital IGN bajo ODC-By y se incluyen en el repositorio junto con su atribución. No se regeneran durante el build. Deben conservarse los avisos y condiciones descritos en [fuentes y trazabilidad](../../docs/mapeo_fuentes.md).
 

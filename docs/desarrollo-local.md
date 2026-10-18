@@ -158,7 +158,7 @@ Estas instrucciones corresponden a los scripts existentes; no certifican una ins
 
 ## Preparación de despliegue
 
-La aplicación todavía no tiene una demo pública documentada. La configuración prevista separa frontend Vercel y API Render:
+La [aplicación pública](https://piuraelectoral.vercel.app/) utiliza frontend Vercel y API Render. El entorno local descrito en esta guía es independiente del publicado; sus credenciales y datos no deben copiarse entre entornos. Configuración por aplicación:
 
 - Frontend: raíz `apps/web`, instalación `bun install --frozen-lockfile`, build `bun run build`, salida `dist`. `vercel.json` aplica el fallback SPA y excluye `/api`, `/geo` y `/assets`.
 - API: raíz `apps/api`, build `npm ci --include=dev && npm run build`, inicio `npm start`, `HOST=0.0.0.0`, `PORT` asignado por el proveedor, `CORS_ORIGIN` HTTPS exacto y `DATABASE_URL` solo en el backend.
