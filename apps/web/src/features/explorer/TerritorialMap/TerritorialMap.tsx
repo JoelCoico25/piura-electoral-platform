@@ -4,7 +4,8 @@ import { useQueries, useQuery } from '@tanstack/react-query'
 import { provinceGeometryQueryOptions, districtGeometryQueryOptions } from '../../../data/geometryQueries'
 import { GeoJSON, MapContainer, Tooltip } from 'react-leaflet'
 import { participationColor } from '../participationScale'
-import { districtIndicators, indicatorValue, indicatorYear, indicatorColor, formatIndicator } from '../districtIndicator'
+import { districtIndicators, indicatorValue, indicatorYear, formatIndicator } from '../districtIndicator'
+import { districtIndicatorState, districtFillColor, pendingDistrictColor } from '../districtMapState'
 import type { DistrictIndicator } from '../districtIndicator'
 import { socioeconomicsQueryOptions } from '../../../data/socioeconomicsQuery'
 import type { SocioeconomicData } from '../socioeconomicData'
@@ -39,6 +40,7 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
   }, [provinces, districts, selectedProvinceId])
   const districtFeatures = selectedProvinceId ? geometry?.data.features ?? [] : []
   const socioeconomicQueries = useQueries({ queries: districtFeatures.map(feature => socioeconomicsQueryOptions(feature.properties.ubigeo)) })
+  const queriesByCode = Object.fromEntries(districtFeatures.map((feature, index) => [feature.properties.ubigeo, socioeconomicQueries[index]]))
   const indicators: Record<string, SocioeconomicData | null> = Object.fromEntries(districtFeatures.map((feature, index) => {
     const query = socioeconomicQueries[index]
     return [feature.properties.ubigeo, query?.isSuccess ? query.data : null]
@@ -46,7 +48,7 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
   const indicatorsLoading = socioeconomicQueries.some(query => query.isPending)
   const state: MapState = provincesQuery.isError || (selectedProvinceId && districtsQuery.isError) || (geometry && selectedProvinceId && geometry.boundsData.features.length === 0)
     ? { status: 'error' }
-    : !geometry || (selectedProvinceId && indicatorsLoading)
+    : !geometry
       ? { status: 'loading' }
       : { status: 'success', ...geometry }
   const configuration = districtIndicators[districtIndicator]
@@ -54,20 +56,26 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
     const year = indicatorYear(data, districtIndicator)
     return year === null ? [] : [year]
   }))].sort()
-  const incomplete = state.status === 'success' && state.data.features.some(feature => indicatorValue(indicators?.[feature.properties.ubigeo] ?? null, districtIndicator) === null)
+  const indicatorErrors = socioeconomicQueries.some(query => query.isError)
+  const incomplete = !indicatorsLoading && state.status === 'success' && state.data.features.some(feature => districtIndicatorState(queriesByCode[feature.properties.ubigeo], districtIndicator) === 'missing')
 
   return (
-    <section aria-labelledby="province-map-title" aria-busy={state.status === 'loading'} className="mt-6">
+    <section aria-labelledby="province-map-title" aria-busy={state.status === 'loading' || indicatorsLoading} className="mt-6">
       <h2 id="province-map-title" className="mb-3 text-lg font-semibold">{selectedProvinceId ? 'Mapa distrital de la provincia seleccionada' : 'Mapa provincial de Piura'}</h2>
       {state.status === 'loading' && <p role="status">Cargando cartografía {selectedProvinceId ? 'distrital' : 'provincial'}…</p>}
       {state.status === 'error' && <p role="alert" className="text-sm text-rose-700">No se pudo cargar el mapa. Cambia la provincia o recarga la página para intentarlo de nuevo.</p>}
       {state.status === 'success' && state.data.features.length === 0 && <p role="status">No hay geometrías disponibles para este territorio.</p>}
       {selectedProvinceId && state.status === 'success' && state.data.features.length > 0 && (
         <div aria-label="Leyenda del indicador distrital" className="mb-3 text-xs text-slate-600">
-          <p className="mb-2 font-semibold">{configuration.name} · {configuration.unit} · Fuente: {configuration.source} · {years.length === 0 ? 'Año de referencia: No disponible' : years.length === 1 ? `Año de referencia: ${years[0]}` : `Años de referencia diferentes entre distritos: ${years.join(', ')}`}</p>
+          <p className="mb-2 font-semibold">{configuration.name} · {configuration.unit} · Fuente: {configuration.source} · {indicatorsLoading ? 'Año de referencia: Cargando…' : years.length === 0 ? 'Año de referencia: No disponible' : years.length === 1 ? `Año de referencia: ${years[0]}` : `Años de referencia diferentes entre distritos: ${years.join(', ')}`}</p>
           <ul className="flex flex-wrap gap-3">
-            {[...configuration.intervals, { label: 'No disponible', color: '#cbd5e1' }].map(interval => <li key={interval.label} className="flex items-center gap-1"><span aria-hidden="true" className="inline-block size-3 border border-slate-300" style={{ backgroundColor: interval.color }} />{interval.label}</li>)}
+            {[...configuration.intervals, { label: 'No disponible', color: '#cbd5e1' },
+              ...(indicatorsLoading ? [{ label: 'Cargando indicadores', color: pendingDistrictColor }] : []),
+              ...(indicatorErrors ? [{ label: 'Error de consulta', color: '#cbd5e1' }] : []),
+            ].map(interval => <li key={interval.label} className="flex items-center gap-1"><span aria-hidden="true" className="inline-block size-3 border border-slate-300" style={{ backgroundColor: interval.color }} />{interval.label}</li>)}
           </ul>
+          {indicatorsLoading && <p role="status" className="mt-2">Cargando indicadores distritales… Los colores temáticos se aplicarán al completar las consultas.</p>}
+          {indicatorErrors && <p role="alert" className="mt-2">Cobertura distrital incompleta: no se pudieron obtener los indicadores de algunos distritos. Sus geometrías permanecen visibles en gris como Error de consulta.</p>}
           {incomplete && <p role="status" className="mt-2">Cobertura distrital incompleta: los distritos sin datos válidos para el indicador se muestran en gris como No disponible.</p>}
         </div>
       )}
@@ -85,12 +93,13 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
             const value = participation[code] ?? null
             const data = indicators?.[code] ?? null
             const indicator = data?.pobreza ?? null
+            const indicatorState = districtIndicatorState(queriesByCode[code], districtIndicator)
             return (
               <GeoJSON
                 key={code}
                 data={feature}
                 style={{ color: '#0f766e', weight: selected ? 3 : 1.5,
-                  fillColor: selectedProvinceId ? indicatorColor(indicatorValue(data, districtIndicator), districtIndicator) : participationColor(value),
+                  fillColor: selectedProvinceId ? districtFillColor(queriesByCode[code], districtIndicator, indicatorsLoading) : participationColor(value),
                   fillOpacity: 0.85 }}
                 attribution='Fuente: <a href="https://www.datosabiertos.gob.pe/dataset/limites-departamentales" target="_blank" rel="noopener noreferrer">IGN (atributo fuente: INEI)</a> · <a href="https://opendatacommons.org/licenses/by/1-0/" target="_blank" rel="noopener noreferrer">ODC-By</a> · Piura: filtro y conversión; provincias por unión distrital'
                 eventHandlers={{ click: () => {
@@ -101,9 +110,13 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
               >
                 <Tooltip sticky>
                   {feature.properties.nombre}
-                  {selectedProvinceId && <span><br />{configuration.name}: {formatIndicator(indicatorValue(data, districtIndicator), districtIndicator)}
+                  {selectedProvinceId && (indicatorState === 'loading'
+                    ? <span><br />{configuration.name}: Cargando…</span>
+                    : indicatorState === 'error'
+                      ? <span><br />{configuration.name}: Error de consulta</span>
+                      : <span><br />{configuration.name}: {formatIndicator(indicatorValue(data, districtIndicator), districtIndicator)}
                     {districtIndicator === 'poverty' && <><br />Límite inferior: {povertyPercentage(indicator?.inferior ?? null)}<br />Límite superior: {povertyPercentage(indicator?.superior ?? null)}</>}
-                    <br />{configuration.source} · Año de referencia: {indicatorYear(data, districtIndicator) ?? 'No disponible'}</span>}
+                    <br />{configuration.source} · Año de referencia: {indicatorYear(data, districtIndicator) ?? 'No disponible'}</span>)}
                   {!selectedProvinceId && ` · Participación ${round}ª vuelta 2021: ${value === null ? 'No disponible' : decimalFormat.format(value) + ' %'}`}
                 </Tooltip>
               </GeoJSON>
