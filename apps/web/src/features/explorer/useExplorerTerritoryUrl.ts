@@ -4,7 +4,8 @@ import { useSearchParams } from 'react-router'
 import { provincesQueryOptions } from '../../data/provincesQuery'
 import { districtsQueryOptions } from '../../data/districtsQuery'
 import { readExplorerUrlState } from '../../lib/territoryUrlState'
-import { resolveExplorerTerritory, withExplorerTerritory } from './explorerTerritoryUrl'
+import { resolveExplorerTerritory, withExplorerTerritory, withExplorerMapOptions } from './explorerTerritoryUrl'
+import type { ExplorerMapOptions } from './explorerTerritoryUrl'
 import type { Territory } from './territorialData'
 import type { TerritoryUrlSelection } from '../../lib/territoryUrlState'
 
@@ -17,7 +18,7 @@ export function useExplorerTerritoryUrl() {
   const districts = useQuery(districtsQueryOptions(knownProvince?.ubigeo ?? ''))
   const restoration = resolveExplorerTerritory(requested, provinces, districts)
   const currentSearch = params.toString()
-  const normalizedSearch = withExplorerTerritory(params, restoration.selection).toString()
+  const normalizedSearch = withExplorerMapOptions(withExplorerTerritory(params, restoration.selection)).toString()
 
   // Único efecto de normalización; no hay copia de la selección en useState.
   useEffect(() => {
@@ -42,5 +43,11 @@ export function useExplorerTerritoryUrl() {
     navigateSelection({ province: knownProvince?.ubigeo ?? null, district: selected?.ubigeo ?? null })
   }, [districts.data, knownProvince?.ubigeo, navigateSelection])
 
-  return { ...restoration, selectProvince, selectDistrict }
+  const selectMapOptions = useCallback((options: Partial<ExplorerMapOptions>) => {
+    const next = withExplorerMapOptions(withExplorerTerritory(params, restoration.selection), options)
+    if (next.toString() !== currentSearch) setParams(next, { preventScrollReset: true })
+  }, [params, restoration.selection, currentSearch, setParams])
+
+  return { ...restoration, selectProvince, selectDistrict,
+    indicator: requested.indicator, round: requested.round, selectMapOptions }
 }

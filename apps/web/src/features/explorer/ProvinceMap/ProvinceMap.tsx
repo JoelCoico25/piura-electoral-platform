@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { provinceGeometryQueryOptions } from '../../../data/geometryQueries'
 import { electionsQueryOptions } from '../../../data/electionsQuery'
@@ -7,9 +6,14 @@ import type { DistrictIndicator } from '../districtIndicator'
 import TerritorialMap from '../TerritorialMap/TerritorialMap'
 import type { MapProps } from '../TerritorialMap/TerritorialMap'
 
-const ProvinceMap = (props: MapProps) => {
-  const [round, setRound] = useState(1)
-  const [districtIndicator, setDistrictIndicator] = useState<DistrictIndicator>('poverty')
+type ProvinceMapProps = MapProps & {
+  round: 1 | 2
+  districtIndicator: DistrictIndicator
+  onRoundChange: (round: 1 | 2) => void
+  onIndicatorChange: (indicator: DistrictIndicator) => void
+}
+
+const ProvinceMap = ({ round, districtIndicator, onRoundChange, onIndicatorChange, ...props }: ProvinceMapProps) => {
   const provincesQuery = useQuery(provinceGeometryQueryOptions)
   const provinces = provincesQuery.data
   const electionQueries = useQueries({ queries: (provinces?.features ?? []).map(feature => electionsQueryOptions(feature.properties.ubigeo)) })
@@ -23,7 +27,10 @@ const ProvinceMap = (props: MapProps) => {
       {!props.selectedProvinceId && (
         <div className="mt-6">
           <label htmlFor="map-round" className="mr-3 text-sm font-medium">Participación presidencial 2021</label>
-          <select id="map-round" value={round} onChange={event => setRound(Number(event.target.value))} className="rounded border border-slate-300 bg-white px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-teal-700">
+          <select id="map-round" value={round} onChange={event => {
+            const value = event.target.value
+            if (value === '1' || value === '2') onRoundChange(value === '2' ? 2 : 1)
+          }} className="rounded border border-slate-300 bg-white px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-teal-700">
             <option value={1}>Primera vuelta</option><option value={2}>Segunda vuelta</option>
           </select>
           {participationLoading ? <p role="status" className="mt-2 text-sm">Cargando participación provincial…</p> :
@@ -40,7 +47,7 @@ const ProvinceMap = (props: MapProps) => {
         <label htmlFor="district-indicator" className="mr-3 text-sm font-medium">Indicador distrital</label>
         <select id="district-indicator" value={districtIndicator} onChange={event => {
           const value = event.target.value
-          if (value === 'poverty' || value === 'idh' || value === 'income') setDistrictIndicator(value)
+          if (value === 'poverty' || value === 'idh' || value === 'income') onIndicatorChange(value)
         }} className="rounded border border-slate-300 bg-white px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-teal-700">
           <option value="poverty">Pobreza estimada</option><option value="idh">IDH</option><option value="income">Ingreso familiar per cápita mensual</option>
         </select>

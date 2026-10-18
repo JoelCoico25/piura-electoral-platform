@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { resolveExplorerTerritory, withExplorerTerritory } from '../src/features/explorer/explorerTerritoryUrl'
+import { resolveExplorerTerritory, withExplorerTerritory, withExplorerMapOptions } from '../src/features/explorer/explorerTerritoryUrl'
 import { readExplorerUrlState } from '../src/lib/territoryUrlState'
 
 const province = { ubigeo: '2001', nombre: 'Piura', departamento_ubigeo: '20' }
@@ -81,6 +81,63 @@ describe('restauración territorial con catálogos', () => {
     const selected = readExplorerUrlState(new URLSearchParams('distrito=200104'))
     expect(resolveExplorerTerritory(selected, provinces, districts).district).toEqual(district)
   })
+})
+
+describe('opciones del mapa en URL', () => {
+  test('no añade parámetros a una URL vacía', () => {
+    const next = withExplorerMapOptions(new URLSearchParams())
+    expect(next.toString()).toBe('')
+    expect(readExplorerUrlState(next)).toMatchObject({ indicator: 'poverty', round: 1 })
+  })
+  test.each(['poverty', 'idh', 'income'])('conserva indicador válido %s y segunda vuelta', indicator => {
+    const params = new URLSearchParams(`indicador=${indicator}&vuelta=2`)
+    expect(withExplorerMapOptions(params).toString()).toBe(params.toString())
+    expect(readExplorerUrlState(params)).toMatchObject({ indicator, round: 2 })
+  })
+  test('normaliza inválidos y duplicados usando la primera aparición', () => {
+    const params = new URLSearchParams('indicador=bad&indicador=idh&vuelta=&vuelta=2')
+    expect(withExplorerMapOptions(params).toString()).toBe('indicador=poverty&vuelta=1')
+    expect(withExplorerMapOptions(new URLSearchParams('indicador=income&indicador=idh&vuelta=2&vuelta=1')).toString())
+      .toBe('indicador=income&vuelta=2')
+  })
+  test('cambiar indicador conserva vuelta, territorios y parámetros ajenos sin mutación', () => {
+    const params = new URLSearchParams('provincia=2001&distrito=200104&vuelta=2&x=1&x=2')
+    const original = params.toString()
+    const next = withExplorerMapOptions(params, { indicator: 'idh' })
+    expect(next.toString()).toBe(`${original}&indicador=idh`)
+    expect(params.toString()).toBe(original)
+  })
+  test('cambiar vuelta conserva indicador aunque el control esté oculto', () => {
+    const next = withExplorerMapOptions(new URLSearchParams('indicador=income&provincia=2001'), { round: 2 })
+    expect(next.toString()).toBe('indicador=income&provincia=2001&vuelta=2')
+  })
+  test('cambiar o limpiar territorio conserva ambas opciones', () => {
+    const params = new URLSearchParams('indicador=idh&vuelta=2&provincia=2001&distrito=200104')
+    expect(withExplorerTerritory(params, { province: '2002', district: null }).toString())
+      .toBe('indicador=idh&vuelta=2&provincia=2002')
+    expect(withExplorerTerritory(params, { province: null, district: null }).toString())
+      .toBe('indicador=idh&vuelta=2')
+  })
+  test('error de catálogo conserva selección y opciones mientras se normalizan valores inválidos', () => {
+    const params = new URLSearchParams('provincia=2001&distrito=200104&indicador=bad&vuelta=2')
+    const result = resolveExplorerTerritory(readExplorerUrlState(params), provinces, error)
+    const next = withExplorerMapOptions(withExplorerTerritory(params, result.selection))
+    expect(result.status).toBe('error')
+    expect(readExplorerUrlState(next)).toEqual({ ...requested, indicator: 'poverty', round: 2 })
+  })
+  test.each(['', 'provincia=2001&indicador=idh&vuelta=2', 'indicador=bad&vuelta=3',
+    'distrito=200104&indicador=income&vuelta=2'])(
+    'normalización completa estable y round-trip: %s', query => {
+      const params = new URLSearchParams(query)
+      const normalize = (value: URLSearchParams) => withExplorerMapOptions(
+        withExplorerTerritory(value, readExplorerUrlState(value)),
+      )
+      const normalized = normalize(params)
+      expect(normalize(normalized).toString()).toBe(normalized.toString())
+      expect(readExplorerUrlState(new URLSearchParams(normalized.toString())))
+        .toEqual(readExplorerUrlState(params))
+    },
+  )
 })
 
 describe('escritura exclusivamente territorial', () => {

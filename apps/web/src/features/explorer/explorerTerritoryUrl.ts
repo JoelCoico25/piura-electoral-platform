@@ -1,7 +1,7 @@
 import type { Province } from '../../data/provincesQuery'
 import type { District } from '../../data/districtsQuery'
 import { readExplorerUrlState } from '../../lib/territoryUrlState'
-import type { TerritoryUrlSelection } from '../../lib/territoryUrlState'
+import type { ExplorerUrlState, TerritoryUrlSelection } from '../../lib/territoryUrlState'
 
 type Catalog<T> = { status: 'pending' | 'error' | 'success'; data?: readonly T[] }
 
@@ -34,8 +34,7 @@ export function resolveExplorerTerritory(
     : { ...base, status: districts.status === 'error' ? 'error' : 'pending' }
 }
 
-// Solo provincia/distrito pertenecen a este lote. Se conservan sin interpretar
-// todos los demás parámetros, incluidos indicador y vuelta.
+// Esta función modifica solo provincia/distrito y conserva los demás parámetros.
 export function withExplorerTerritory(params: URLSearchParams, selection: TerritoryUrlSelection): URLSearchParams {
   const normalized = readExplorerUrlState(new URLSearchParams({
     provincia: selection.province ?? '', distrito: selection.district ?? '',
@@ -45,5 +44,21 @@ export function withExplorerTerritory(params: URLSearchParams, selection: Territ
   next.delete('distrito')
   if (normalized.province) next.set('provincia', normalized.province)
   if (normalized.district) next.set('distrito', normalized.district)
+  return next
+}
+
+export type ExplorerMapOptions = Pick<ExplorerUrlState, 'indicator' | 'round'>
+
+// Normaliza opciones presentes y cambios explícitos, sin añadir valores por
+// defecto a una URL vacía ni modificar territorios o parámetros ajenos.
+export function withExplorerMapOptions(
+  params: URLSearchParams, options: Partial<ExplorerMapOptions> = {},
+): URLSearchParams {
+  const next = new URLSearchParams(params)
+  if (options.indicator !== undefined) next.set('indicador', options.indicator)
+  if (options.round !== undefined) next.set('vuelta', String(options.round))
+  const normalized = readExplorerUrlState(next)
+  if (next.has('indicador')) next.set('indicador', normalized.indicator)
+  if (next.has('vuelta')) next.set('vuelta', String(normalized.round))
   return next
 }

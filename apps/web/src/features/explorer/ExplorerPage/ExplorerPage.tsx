@@ -5,7 +5,7 @@ import ProvinceMap from '../ProvinceMap/ProvinceMap'
 import TerritorySelectors from '../TerritorySelectors/TerritorySelectors'
 
 const ExplorerPage = () => {
-  const { province, district, status, selectProvince, selectDistrict } = useExplorerTerritoryUrl()
+  const { province, district, status, selectProvince, selectDistrict, indicator, round, selectMapOptions } = useExplorerTerritoryUrl()
   const territory = district ?? province
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -20,7 +20,7 @@ const ExplorerPage = () => {
         <p className="mt-4 text-sm text-slate-600">Selecciona una provincia o distrito para consultar sus resultados electorales.</p>
       )}
       <SocioeconomicPanel districtUbigeo={district?.ubigeo ?? null} />
-      <ProvinceMap selectedProvinceId={province?.ubigeo ?? ''} selectedDistrictId={district?.ubigeo ?? ''} onProvinceChange={selectProvince} onDistrictChange={selectDistrict} />
+      <ProvinceMap selectedProvinceId={province?.ubigeo ?? ''} selectedDistrictId={district?.ubigeo ?? ''} onProvinceChange={selectProvince} onDistrictChange={selectDistrict} districtIndicator={indicator} round={round} onIndicatorChange={indicator => selectMapOptions({ indicator })} onRoundChange={round => selectMapOptions({ round })} />
     </div>
   )
 }
