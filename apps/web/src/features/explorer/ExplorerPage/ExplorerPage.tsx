@@ -1,26 +1,19 @@
-import { useCallback, useState } from 'react'
+import { useExplorerTerritoryUrl } from '../useExplorerTerritoryUrl'
 import ElectoralResultsPanel from '../ElectoralResultsPanel/ElectoralResultsPanel'
 import SocioeconomicPanel from '../SocioeconomicPanel/SocioeconomicPanel'
 import ProvinceMap from '../ProvinceMap/ProvinceMap'
-import type { Territory } from '../territorialData'
 import TerritorySelectors from '../TerritorySelectors/TerritorySelectors'
 
 const ExplorerPage = () => {
-  const [province, setProvince] = useState<Territory | null>(null)
-  const [district, setDistrict] = useState<Territory | null>(null)
-  const selectProvince = useCallback((selected: Territory | null) => {
-    setProvince(selected)
-    setDistrict(null)
-  }, [])
-  const selectDistrict = useCallback((selected: Territory | null) => {
-    if (selected && (!/^20\d{4}$/.test(selected.ubigeo) || selected.ubigeo.slice(0, 4) !== province?.ubigeo)) return
-    setDistrict(selected)
-  }, [province?.ubigeo])
+  const { province, district, status, selectProvince, selectDistrict } = useExplorerTerritoryUrl()
   const territory = district ?? province
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-4 text-2xl font-semibold tracking-tight">Explorador territorial</h1>
       <TerritorySelectors province={province} district={district} onProvinceChange={selectProvince} onDistrictChange={selectDistrict} />
+      {status === 'pending' && <p role="status" className="mt-4 text-sm text-slate-600">Restaurando selección territorial…</p>}
+      {status === 'error' && <p role="alert" className="mt-4 text-sm text-slate-600">No se pudo validar la selección territorial. Se conserva en la URL para volver a intentarlo al recargar.</p>}
+      {status === 'missing' && <p role="status" className="mt-4 text-sm text-slate-600">El territorio solicitado no existe en el catálogo.</p>}
       {territory ? (
         <ElectoralResultsPanel territory={territory} />
       ) : (
