@@ -1,14 +1,10 @@
-import { useState } from 'react'
+import { useComparisonUrl } from '../useComparisonUrl'
 import SocioeconomicComparison from '../SocioeconomicComparison/SocioeconomicComparison'
 import ElectoralComparison from '../ElectoralComparison/ElectoralComparison'
 import ComparisonSelectors from '../ComparisonSelectors/ComparisonSelectors'
-import type { ComparisonLevel, ComparisonSelection } from '../ComparisonSelectors/ComparisonSelectors'
-
-const emptySelection: ComparisonSelection = { province: null, district: null }
 
 const ComparePage = () => {
-  const [level, setLevel] = useState<ComparisonLevel>('province')
-  const [selections, setSelections] = useState({ a: emptySelection, b: emptySelection })
+  const { level, selections, statuses, selectLevel, selectTerritory } = useComparisonUrl()
   const a = level === 'province' ? selections.a.province : selections.a.district
   const b = level === 'province' ? selections.b.province : selections.b.district
   const ready = a && b && a.ubigeo !== b.ubigeo
@@ -20,19 +16,14 @@ const ComparePage = () => {
       <ComparisonSelectors
         level={level}
         selections={selections}
-        onLevelChange={next => {
-          setLevel(next)
-          setSelections({ a: emptySelection, b: emptySelection })
-        }}
-        onSelectionChange={(side, selection) => {
-          setSelections(current => {
-            const other = current[side === 'a' ? 'b' : 'a']
-            const selectedCode = level === 'province' ? selection.province?.ubigeo : selection.district?.ubigeo
-            const otherCode = level === 'province' ? other.province?.ubigeo : other.district?.ubigeo
-            return selectedCode && selectedCode === otherCode ? current : { ...current, [side]: selection }
-          })
-        }}
+        onLevelChange={selectLevel}
+        onSelectionChange={selectTerritory}
       />
+      {(['a', 'b'] as const).map(side => statuses[side] === 'pending'
+        ? <p key={side} role="status" className="mt-3 text-sm text-slate-600">Restaurando territorio {side.toUpperCase()}…</p>
+        : statuses[side] === 'error'
+          ? <p key={side} role="alert" className="mt-3 text-sm text-slate-600">No se pudo validar el territorio {side.toUpperCase()}. Se conserva en la URL para volver a intentarlo al recargar.</p>
+          : null)}
       {ready ? <ElectoralComparison a={a} b={b} /> : (
         <p role="status" className="mt-6 text-sm text-slate-600">Selecciona dos territorios distintos del mismo nivel para preparar la comparación.</p>
       )}
