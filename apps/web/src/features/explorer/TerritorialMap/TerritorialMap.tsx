@@ -2,7 +2,7 @@ import { decimalFormat } from '../../../lib/numberFormat'
 import { useMemo } from 'react'
 import { useQueries, useQuery } from '@tanstack/react-query'
 import { provinceGeometryQueryOptions, districtGeometryQueryOptions } from '../../../data/geometryQueries'
-import { GeoJSON, MapContainer, Tooltip } from 'react-leaflet'
+import { GeoJSON, MapContainer, Pane, Tooltip } from 'react-leaflet'
 import { participationColor } from '../participationScale'
 import { districtIndicators, indicatorValue, indicatorYear, formatIndicator } from '../districtIndicator'
 import { districtIndicatorState, districtFillColor, pendingDistrictColor } from '../districtMapState'
@@ -13,6 +13,7 @@ import 'leaflet/dist/leaflet.css'
 import type { ProvinceGeometry } from '../provinceGeometry'
 import type { Territory } from '../territorialData'
 import MapBounds from '../MapBounds/MapBounds'
+import { territoryPane, contextPane } from '../mapTransition'
 
 type MapState = { status: 'loading' } | { status: 'error' } | { status: 'success'; data: ProvinceGeometry; boundsData: ProvinceGeometry }
 const povertyFormat = decimalFormat
@@ -30,14 +31,22 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
   const districtsQuery = useQuery({ ...districtGeometryQueryOptions, enabled: Boolean(selectedProvinceId) })
   const provinces = provincesQuery.data
   const districts = districtsQuery.data
-  const geometry = useMemo(() => {
+  const boundsGeometry = useMemo((): ProvinceGeometry | null => {
     if (!provinces) return null
-    if (!selectedProvinceId) return { data: provinces, boundsData: provinces }
+    return selectedProvinceId
+      ? { type: 'FeatureCollection', features: provinces.features.filter(feature => feature.properties.ubigeo === selectedProvinceId) }
+      : provinces
+  }, [provinces, selectedProvinceId])
+  const geometry = useMemo(() => {
+    if (!boundsGeometry) return null
+    if (!selectedProvinceId) return { data: boundsGeometry, boundsData: boundsGeometry }
     if (!districts) return null
-    const boundsData: ProvinceGeometry = { type: 'FeatureCollection', features: provinces.features.filter(feature => feature.properties.ubigeo === selectedProvinceId) }
     const data: ProvinceGeometry = { type: 'FeatureCollection', features: districts.features.filter(feature => feature.properties.provincia_ubigeo === selectedProvinceId) }
-    return { data, boundsData }
-  }, [provinces, districts, selectedProvinceId])
+    return { data, boundsData: boundsGeometry }
+  }, [boundsGeometry, districts, selectedProvinceId])
+  const focusGeometry = useMemo((): ProvinceGeometry | null => selectedDistrictId && geometry
+    ? { type: 'FeatureCollection', features: geometry.data.features.filter(feature => feature.properties.ubigeo === selectedDistrictId) }
+    : null, [geometry, selectedDistrictId])
   const districtFeatures = selectedProvinceId ? geometry?.data.features ?? [] : []
   const socioeconomicQueries = useQueries({ queries: districtFeatures.map(feature => socioeconomicsQueryOptions(feature.properties.ubigeo)) })
   const queriesByCode = Object.fromEntries(districtFeatures.map((feature, index) => [feature.properties.ubigeo, socioeconomicQueries[index]]))
@@ -86,7 +95,11 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
           scrollWheelZoom={false}
           className="h-80 w-full bg-slate-100 sm:h-[440px]"
         >
-          <MapBounds geometry={state.status === 'success' ? state.boundsData : null} />
+          <Pane name={contextPane} style={{ zIndex: 400, pointerEvents: 'none' }}>
+            {provinces && <GeoJSON data={provinces} interactive={false} style={{ color: '#0f766e', weight: 1.5, fillColor: '#f1f5f9', fillOpacity: 0.85 }} />}
+          </Pane>
+          <Pane name={territoryPane} style={{ zIndex: 401 }}>
+          <MapBounds geometry={boundsGeometry} focusGeometry={focusGeometry} cameraKey={`${selectedProvinceId || 'region'}:${selectedDistrictId}`} layerKey={selectedProvinceId || 'region'} layersReady={state.status === 'success' && state.data.features.length > 0} />
           {(state.status === 'success' ? state.data.features : []).map(feature => {
             const code = feature.properties.ubigeo
             const selected = code === (selectedProvinceId ? selectedDistrictId : selectedProvinceId)
@@ -122,6 +135,7 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
               </GeoJSON>
             )
           })}
+          </Pane>
         </MapContainer>
       </div>
       <p className="mt-2 text-xs text-slate-600">Pasa el cursor sobre {selectedProvinceId ? 'un distrito' : 'una provincia'} para ver su nombre.</p>
