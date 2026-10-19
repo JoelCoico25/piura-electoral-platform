@@ -121,7 +121,7 @@ const TerritorialMap = ({ selectedProvinceId, selectedDistrictId, onProvinceChan
                   else onProvinceChange(territory)
                 } }}
               >
-                <Tooltip sticky>
+                <Tooltip sticky pane="tooltipPane">
                   {feature.properties.nombre}
                   {selectedProvinceId && (indicatorState === 'loading'
                     ? <span><br />{configuration.name}: Cargando…</span>
