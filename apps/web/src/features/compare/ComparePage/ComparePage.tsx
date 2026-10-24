@@ -1,4 +1,5 @@
 import { useComparisonUrl } from '../useComparisonUrl'
+import DelayedApiNotice from '../../../components/DelayedApiNotice/DelayedApiNotice'
 import SocioeconomicComparison from '../SocioeconomicComparison/SocioeconomicComparison'
 import ElectoralComparison from '../ElectoralComparison/ElectoralComparison'
 import ComparisonSelectors from '../ComparisonSelectors/ComparisonSelectors'
@@ -19,6 +20,7 @@ const ComparePage = () => {
         onLevelChange={selectLevel}
         onSelectionChange={selectTerritory}
       />
+      <DelayedApiNotice />
       {(['a', 'b'] as const).map(side => statuses[side] === 'pending'
         ? <p key={side} role="status" className="mt-3 text-sm text-slate-600">Restaurando territorio {side.toUpperCase()}…</p>
         : statuses[side] === 'error'
